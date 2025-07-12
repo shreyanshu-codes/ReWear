@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Shirt, Sparkles, CalendarDays, Home } from 'lucide-react';
-
+import { Shirt, Sparkles, CalendarDays, Home, LogOut } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/logo';
 import {
@@ -12,6 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
 
 const navItems = [
   { href: '/', label: 'My Wardrobe', icon: Home },
@@ -21,6 +22,7 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { logout } = useAuth();
 
   return (
     <aside className="hidden md:flex flex-col w-64 p-4 bg-card border-r border-border shrink-0">
@@ -54,6 +56,12 @@ export default function Sidebar() {
             );
           })}
         </nav>
+        <div className="mt-auto p-2">
+            <Button variant="ghost" className="w-full justify-start text-muted-foreground" onClick={logout}>
+                <LogOut className="mr-3 h-5 w-5" />
+                Sign Out
+            </Button>
+        </div>
       </TooltipProvider>
     </aside>
   );

@@ -3,7 +3,7 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { WardrobeProvider } from '@/hooks/use-wardrobe';
-import Sidebar from '@/components/navigation/sidebar';
+import { AuthProvider } from '@/hooks/use-auth';
 
 export const metadata: Metadata = {
   title: 'ReWear Stylist',
@@ -23,15 +23,12 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&family=Belleza&display=swap" rel="stylesheet" />
       </head>
       <body className={cn('font-body antialiased')}>
-        <WardrobeProvider>
-          <div className="flex min-h-screen w-full">
-            <Sidebar />
-            <main className="flex-1 p-4 sm:p-6 lg:p-8">
-              {children}
-            </main>
-          </div>
-          <Toaster />
-        </WardrobeProvider>
+        <AuthProvider>
+          <WardrobeProvider>
+            {children}
+            <Toaster />
+          </WardrobeProvider>
+        </AuthProvider>
       </body>
     </html>
   );
