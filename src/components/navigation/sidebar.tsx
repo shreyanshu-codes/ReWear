@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Sparkles, CalendarDays, LogOut, LayoutDashboard, Store } from 'lucide-react';
+import { Sparkles, CalendarDays, LogOut, LayoutDashboard, Store, Shield } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/logo';
@@ -21,9 +21,13 @@ const navItems = [
   { href: '/calendar', label: 'Calendar', icon: CalendarDays },
 ];
 
+const adminNavItems = [
+    { href: '/admin', label: 'Admin', icon: Shield },
+];
+
 export default function Sidebar() {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logout, isAdmin } = useAuth();
 
   return (
     <aside className="hidden md:flex flex-col w-64 p-4 bg-card border-r border-border shrink-0">
@@ -56,6 +60,35 @@ export default function Sidebar() {
               </Tooltip>
             );
           })}
+          {isAdmin && (
+              <>
+                <div className="my-4 border-t border-border" />
+                {adminNavItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Tooltip key={item.href}>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          'flex items-center gap-3 rounded-lg px-3 py-2 transition-all',
+                          isActive
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                        )}
+                      >
+                        <item.icon className="h-5 w-5" />
+                        <span className="font-medium">{item.label}</span>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>{item.label}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
+              </>
+          )}
         </nav>
         <div className="mt-auto p-2">
             <Button variant="ghost" className="w-full justify-start text-muted-foreground" onClick={logout}>
