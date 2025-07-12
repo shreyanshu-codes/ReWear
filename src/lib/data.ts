@@ -64,6 +64,11 @@ export const occasions: string[] = [
     'Cozy Night In',
 ];
 
+export const categories: string[] = ['Tops', 'Bottoms', 'Dresses', 'Outerwear', 'Shoes', 'Accessories'];
+export const sizes: string[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+export const conditions: string[] = ['New with tags', 'Excellent', 'Good', 'Fair'];
+
+
 export const newGarment: Garment = {
     id: '6',
     name: 'Cashmere Sweater',

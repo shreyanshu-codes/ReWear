@@ -5,9 +5,14 @@ export interface Garment {
   category: string;
   suitableOccasions: string;
   dominantColor: string;
-  imageUrl: string;
+  imageUrl: string; // The primary image URL
+  imageUrls?: string[]; // Array of all image URLs
   style: string;
   availability: boolean;
+  approved?: boolean;
+  condition?: string;
+  size?: string;
+  tags?: string;
 }
 
 export interface OutfitPlan {
@@ -23,4 +28,5 @@ export interface FirestoreGarment extends Omit<Garment, 'id'>{
   uploader: string;
   timestamp: any; // serverTimestamp
   availability: boolean;
+  approved: boolean;
 }
