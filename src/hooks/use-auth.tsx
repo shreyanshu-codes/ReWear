@@ -7,9 +7,11 @@ import {
   signInWithEmailAndPassword,
   signOut,
   User,
+  UserCredential,
 } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
+import { doc, setDoc } from 'firebase/firestore';
 
 interface AuthContextType {
   user: User | null;
@@ -40,10 +42,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .finally(() => setLoading(false));
   };
 
-  const signup = (email: string, password: string) => {
+  const signup = async (email: string, password: string) => {
     setLoading(true);
-    return createUserWithEmailAndPassword(auth, email, password)
-      .finally(() => setLoading(false));
+    try {
+      const userCredential: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const newUser = userCredential.user;
+      
+      // Save user data to Firestore
+      await setDoc(doc(db, 'users', newUser.uid), {
+        uid: newUser.uid,
+        email: newUser.email,
+        points: 0,
+      });
+
+      return userCredential;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = async () => {
