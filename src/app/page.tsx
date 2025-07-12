@@ -22,7 +22,8 @@ async function getFeaturedItems(): Promise<Garment[]> {
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-        throw new Error("No featured items found.");
+        console.log("No featured items found in Firestore. Returning empty array.");
+        return []; // Return an empty array instead of throwing an error
     }
     
     const itemPromises = querySnapshot.docs.map(doc => {
@@ -45,7 +46,7 @@ async function getFeaturedItems(): Promise<Garment[]> {
 
   } catch (error) {
     console.error("Error fetching featured items: ", error);
-    // Return dummy data on error to ensure page renders
+    // Return dummy data on error to ensure page can still render
     return [
         { id: '1', name: 'Classic White Tee', imageUrls: ['https://placehold.co/400x600.png'], category: 'Tops', style: 'Classic' },
         { id: '2', name: 'Vintage Blue Jeans', imageUrls: ['https://placehold.co/400x600.png'], category: 'Bottoms', style: 'Vintage' },
@@ -94,36 +95,42 @@ export default async function LandingPage() {
         <section className="w-full py-12 md:py-24 lg:py-32">
           <div className="container px-4 md:px-6">
             <h2 className="text-3xl font-headline text-center mb-8 sm:mb-12">Featured Items</h2>
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full max-w-4xl mx-auto"
-            >
-              <CarouselContent>
-                {featuredItems.map((item) => (
-                  <CarouselItem key={item.id} className="md:basis-1/2 lg:basis-1/3">
-                    <div className="p-1">
-                      <Card className="overflow-hidden">
-                        <CardContent className="p-0">
-                          <Image
-                            src={item.imageUrls?.[0] || 'https://placehold.co/400x600.png'}
-                            alt={item.name}
-                            width={400}
-                            height={500}
-                            className="object-cover w-full aspect-[4/5]"
-                            data-ai-hint={`${item.category} ${item.style}`}
-                          />
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
-            </Carousel>
+            {featuredItems.length > 0 ? (
+                <Carousel
+                opts={{
+                    align: "start",
+                    loop: true,
+                }}
+                className="w-full max-w-4xl mx-auto"
+                >
+                <CarouselContent>
+                    {featuredItems.map((item) => (
+                    <CarouselItem key={item.id} className="md:basis-1/2 lg:basis-1/3">
+                        <div className="p-1">
+                        <Card className="overflow-hidden">
+                            <CardContent className="p-0">
+                            <Image
+                                src={item.imageUrls?.[0] || 'https://placehold.co/400x600.png'}
+                                alt={item.name}
+                                width={400}
+                                height={500}
+                                className="object-cover w-full aspect-[4/5]"
+                                data-ai-hint={`${item.category} ${item.style}`}
+                            />
+                            </CardContent>
+                        </Card>
+                        </div>
+                    </CarouselItem>
+                    ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+                </Carousel>
+            ) : (
+                <div className="text-center text-muted-foreground">
+                    <p>No featured items to display at the moment. Check back later!</p>
+                </div>
+            )}
           </div>
         </section>
       </main>
