@@ -4,11 +4,11 @@ import React, { createContext, useContext, useState, ReactNode, useCallback, use
 import type { Garment, OutfitPlan } from '@/types';
 import { useAuth } from './use-auth';
 import { db } from '@/lib/firebase';
-import { collection, query, where, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, addDoc, serverTimestamp, doc, updateDoc } from 'firebase/firestore';
 
 interface WardrobeContextType {
   wardrobe: Garment[];
-  addGarment: (garment: Omit<Garment, 'id' | 'uploader'>) => Promise<void>;
+  addGarment: (garment: Omit<Garment, 'id' | 'uploader' | 'availability'>) => Promise<void>;
   plannedOutfits: OutfitPlan[];
   addPlannedOutfit: (plan: Omit<OutfitPlan, 'id'>) => void;
 }
@@ -29,7 +29,6 @@ export const WardrobeProvider = ({ children }: { children: ReactNode }) => {
           const data = doc.data();
           userWardrobe.push({
             id: doc.id,
-            // We assume the data from Firestore matches the Garment type
             name: data.name || '',
             description: data.description || '',
             category: data.category || '',
@@ -37,7 +36,7 @@ export const WardrobeProvider = ({ children }: { children: ReactNode }) => {
             dominantColor: data.dominantColor || '',
             imageUrl: data.imageUrl || '',
             style: data.style || '',
-            // a uploader field is not part of Garment, so we omit it
+            availability: data.availability,
           });
         });
         setWardrobe(userWardrobe);
@@ -49,16 +48,19 @@ export const WardrobeProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user]);
 
-  const addGarment = useCallback(async (garment: Omit<Garment, 'id' | 'uploader'>) => {
+  const addGarment = useCallback(async (garment: Omit<Garment, 'id' | 'uploader'| 'availability'>) => {
     if (!user) {
       throw new Error('You must be logged in to add a garment.');
     }
-    await addDoc(collection(db, 'items'), {
+    const docRef = await addDoc(collection(db, 'items'), {
       ...garment,
       uploader: user.uid,
       timestamp: serverTimestamp(),
       availability: true, // Default availability
     });
+
+    // We can't immediately get the download URL if we're separating concerns.
+    // The component that does the upload should update the document with the URL.
   }, [user]);
 
   const addPlannedOutfit = useCallback((plan: Omit<OutfitPlan, 'id'>) => {

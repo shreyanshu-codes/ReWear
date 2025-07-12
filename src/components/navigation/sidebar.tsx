@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Shirt, Sparkles, CalendarDays, Home, LogOut, LayoutDashboard } from 'lucide-react';
+import { Sparkles, CalendarDays, LogOut, LayoutDashboard, Store } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/logo';
@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 
 const navItems = [
   { href: '/dashboard', label: 'My Wardrobe', icon: LayoutDashboard },
+  { href: '/marketplace', label: 'Marketplace', icon: Store },
   { href: '/suggestions', label: 'Suggestions', icon: Sparkles },
   { href: '/calendar', label: 'Calendar', icon: CalendarDays },
 ];

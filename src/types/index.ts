@@ -7,6 +7,7 @@ export interface Garment {
   dominantColor: string;
   imageUrl: string;
   style: string;
+  availability: boolean;
 }
 
 export interface OutfitPlan {

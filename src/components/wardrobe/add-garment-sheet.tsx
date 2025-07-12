@@ -33,7 +33,7 @@ import { useToast } from '@/hooks/use-toast';
 import { describeGarment } from '@/ai/flows/describe-garment-flow';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db } from '@/lib/firebase';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp, doc, updateDoc } from 'firebase/firestore';
 
 
 const formSchema = z.object({
@@ -103,13 +103,7 @@ export function AddGarmentSheet() {
         const snapshot = await uploadBytes(storageRef, file);
         const imageUrl = await getDownloadURL(snapshot.ref);
 
-        // This is a bit redundant if useWardrobe uses a snapshot listener,
-        // but we'll call it for immediate feedback. The listener will then sync state.
-        await addGarment({
-          ...descriptionResult,
-          name: descriptionResult.category,
-          imageUrl: imageUrl,
-        });
+        await updateDoc(doc(db, "items", garmentRef.id), { imageUrl });
 
         toast({
           title: 'Success!',

@@ -2,15 +2,16 @@ import Image from 'next/image';
 import type { Garment } from '@/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 interface GarmentCardProps {
   garment: Garment;
+  isLink?: boolean;
 }
 
-export function GarmentCard({ garment }: GarmentCardProps) {
-  return (
-    <Card className="overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+export function GarmentCard({ garment, isLink = false }: GarmentCardProps) {
+  const cardContent = (
+    <Card className="overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full">
       <CardHeader className="p-0 relative">
         <Image
           src={garment.imageUrl}
@@ -30,4 +31,14 @@ export function GarmentCard({ garment }: GarmentCardProps) {
       </CardFooter>
     </Card>
   );
+
+  if (isLink) {
+    return (
+      <Link href={`/item/${garment.id}`} className="block h-full">
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return cardContent;
 }

@@ -10,6 +10,7 @@ import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firesto
 import type { Garment } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Handshake, Repeat, Star } from 'lucide-react';
+import Link from 'next/link';
 
 export default function WardrobePage() {
   const { wardrobe } = useWardrobe();
@@ -116,7 +117,7 @@ export default function WardrobePage() {
         {wardrobe.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {wardrobe.map((garment) => (
-              <GarmentCard key={garment.id} garment={garment} />
+              <GarmentCard key={garment.id} garment={garment} isLink />
             ))}
           </div>
         ) : (
