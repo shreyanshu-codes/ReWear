@@ -32,6 +32,9 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { describeGarment } from '@/ai/flows/describe-garment-flow';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db } from '@/lib/firebase';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+
 
 const formSchema = z.object({
   image: z.instanceof(FileList).refine((files) => files?.length === 1, 'Image is required.'),
@@ -86,16 +89,25 @@ export function AddGarmentSheet() {
         
         const descriptionResult = await describeGarment({ photoDataUri });
         
-        const garmentId = `${Date.now()}`;
-        const storageRef = ref(storage, `images/${user.uid}/${garmentId}/${file.name}`);
+        const garmentRef = await addDoc(collection(db, "items"), {
+            ...descriptionResult,
+            name: descriptionResult.category, // Use category as a sensible default name
+            uploader: user.uid,
+            timestamp: serverTimestamp(),
+            availability: true,
+            imageUrl: '', // temp value
+        });
+
+        const storageRef = ref(storage, `images/${user.uid}/${garmentRef.id}/${file.name}`);
         
         const snapshot = await uploadBytes(storageRef, file);
         const imageUrl = await getDownloadURL(snapshot.ref);
 
-        addGarment({
+        // This is a bit redundant if useWardrobe uses a snapshot listener,
+        // but we'll call it for immediate feedback. The listener will then sync state.
+        await addGarment({
           ...descriptionResult,
-          id: garmentId,
-          name: descriptionResult.category, // Use category as a sensible default name
+          name: descriptionResult.category,
           imageUrl: imageUrl,
         });
 

@@ -17,3 +17,9 @@ export interface OutfitPlan {
     reasoning: string;
   }
 }
+
+export interface FirestoreGarment extends Omit<Garment, 'id'>{
+  uploader: string;
+  timestamp: any; // serverTimestamp
+  availability: boolean;
+}
