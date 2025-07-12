@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { doc, getDoc, updateDoc, addDoc, collection, serverTimestamp, runTransaction } from 'firebase/firestore';
+import { doc, getDoc, addDoc, collection, serverTimestamp, runTransaction } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/use-auth';
 import type { Garment, FirestoreGarment } from '@/types';
@@ -27,7 +27,6 @@ import {
 interface ItemDetails extends Garment {
   uploaderEmail: string;
   uploaderUid: string;
-  availability: boolean;
 }
 
 export default function ItemDetailPage() {
@@ -65,7 +64,6 @@ export default function ItemDetailPage() {
             ...itemData,
             uploaderEmail,
             uploaderUid: itemData.uploader,
-            availability: itemData.availability,
           } as ItemDetails);
         } else {
           toast({ variant: 'destructive', title: 'Error', description: 'Item not found.' });
@@ -170,7 +168,7 @@ export default function ItemDetailPage() {
         <div className="grid md:grid-cols-2">
           <CardHeader className="p-0">
             <Image
-              src={item.imageUrl}
+              src={item.imageUrls?.[0] || 'https://placehold.co/500x700.png'}
               alt={item.name}
               width={500}
               height={700}

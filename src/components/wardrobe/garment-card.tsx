@@ -14,7 +14,7 @@ export function GarmentCard({ garment, isLink = false }: GarmentCardProps) {
     <Card className="overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full">
       <CardHeader className="p-0 relative">
         <Image
-          src={garment.imageUrl}
+          src={garment.imageUrls?.[0] || 'https://placehold.co/400x600.png'}
           alt={garment.name}
           width={400}
           height={600}

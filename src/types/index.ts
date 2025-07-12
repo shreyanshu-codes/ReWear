@@ -5,14 +5,14 @@ export interface Garment {
   category: string;
   suitableOccasions: string;
   dominantColor: string;
-  imageUrl: string; // The primary image URL
-  imageUrls?: string[]; // Array of all image URLs
+  imageUrls: string[]; // Array of all image URLs
   style: string;
   availability: boolean;
   approved?: boolean;
   condition?: string;
   size?: string;
   tags?: string;
+  uploader?: string; // Add uploader UID to the base Garment type
 }
 
 export interface OutfitPlan {

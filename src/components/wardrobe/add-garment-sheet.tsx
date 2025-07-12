@@ -43,7 +43,7 @@ import {
 } from '@/components/ui/select';
 
 const formSchema = z.object({
-  title: z.string().min(1, 'Title is required.'),
+  name: z.string().min(1, 'Title is required.'),
   description: z.string().min(1, 'Description is required.'),
   category: z.string().min(1, 'Category is required.'),
   size: z.string().min(1, 'Size is required.'),
@@ -65,7 +65,7 @@ export function AddGarmentSheet() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: '',
+      name: '',
       description: '',
       category: '',
       size: '',
@@ -104,8 +104,13 @@ export function AddGarmentSheet() {
     try {
       // 1. Create a preliminary document in Firestore to get an ID
       const itemRef = await addDoc(collection(db, "items"), {
-          ...data,
-          images: [], // temporary empty array
+          name: data.name,
+          description: data.description,
+          category: data.category,
+          size: data.size,
+          condition: data.condition,
+          tags: data.tags || '',
+          imageUrls: [], // temporary empty array
           uploader: user.uid,
           timestamp: serverTimestamp(),
           availability: true,
@@ -169,7 +174,7 @@ export function AddGarmentSheet() {
             <form id="add-item-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
-                name="title"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Title</FormLabel>

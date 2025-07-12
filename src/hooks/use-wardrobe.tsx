@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, ReactNode, useCallback, use
 import type { Garment, OutfitPlan } from '@/types';
 import { useAuth } from './use-auth';
 import { db } from '@/lib/firebase';
-import { collection, query, where, onSnapshot, addDoc, serverTimestamp, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
 
 interface WardrobeContextType {
   wardrobe: Garment[];
@@ -34,9 +34,10 @@ export const WardrobeProvider = ({ children }: { children: ReactNode }) => {
             category: data.category || '',
             suitableOccasions: data.suitableOccasions || '',
             dominantColor: data.dominantColor || '',
-            imageUrl: data.imageUrl || '',
+            imageUrls: data.imageUrls || [],
             style: data.style || '',
             availability: data.availability,
+            uploader: data.uploader,
           });
         });
         setWardrobe(userWardrobe);
@@ -52,15 +53,12 @@ export const WardrobeProvider = ({ children }: { children: ReactNode }) => {
     if (!user) {
       throw new Error('You must be logged in to add a garment.');
     }
-    const docRef = await addDoc(collection(db, 'items'), {
+    await addDoc(collection(db, 'items'), {
       ...garment,
       uploader: user.uid,
       timestamp: serverTimestamp(),
       availability: true, // Default availability
     });
-
-    // We can't immediately get the download URL if we're separating concerns.
-    // The component that does the upload should update the document with the URL.
   }, [user]);
 
   const addPlannedOutfit = useCallback((plan: Omit<OutfitPlan, 'id'>) => {

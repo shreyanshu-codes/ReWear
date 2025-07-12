@@ -8,8 +8,9 @@ export const initialWardrobe: Garment[] = [
     category: 'Tops',
     suitableOccasions: 'Casual, Everyday, Layering',
     dominantColor: 'White',
-    imageUrl: 'https://placehold.co/400x600.png',
+    imageUrls: ['https://placehold.co/400x600.png'],
     style: 'Classic',
+    availability: true,
   },
   {
     id: '2',
@@ -18,8 +19,9 @@ export const initialWardrobe: Garment[] = [
     category: 'Bottoms',
     suitableOccasions: 'Casual, Weekend, Streetwear',
     dominantColor: 'Blue',
-    imageUrl: 'https://placehold.co/400x600.png',
+    imageUrls: ['https://placehold.co/400x600.png'],
     style: 'Vintage',
+    availability: true,
   },
   {
     id: '3',
@@ -28,8 +30,9 @@ export const initialWardrobe: Garment[] = [
     category: 'Dresses',
     suitableOccasions: 'Summer, Casual, Garden Party',
     dominantColor: 'Yellow',
-    imageUrl: 'https://placehold.co/400x600.png',
+    imageUrls: ['https://placehold.co/400x600.png'],
     style: 'Bohemian',
+    availability: true,
   },
   {
     id: '4',
@@ -38,8 +41,9 @@ export const initialWardrobe: Garment[] = [
     category: 'Outerwear',
     suitableOccasions: 'Work, Formal, Smart Casual',
     dominantColor: 'Black',
-    imageUrl: 'https://placehold.co/400x600.png',
+    imageUrls: ['https://placehold.co/400x600.png'],
     style: 'Modern',
+    availability: true,
   },
     {
     id: '5',
@@ -48,8 +52,9 @@ export const initialWardrobe: Garment[] = [
     category: 'Shoes',
     suitableOccasions: 'Casual, Work, Evening',
     dominantColor: 'Brown',
-    imageUrl: 'https://placehold.co/400x600.png',
+    imageUrls: ['https://placehold.co/400x600.png'],
     style: 'Classic',
+    availability: true,
   },
 ];
 
@@ -76,6 +81,7 @@ export const newGarment: Garment = {
     category: 'Tops',
     suitableOccasions: 'Work, Casual, Evening',
     dominantColor: 'Beige',
-    imageUrl: 'https://placehold.co/400x600.png',
+    imageUrls: ['https://placehold.co/400x600.png'],
     style: 'Classic',
+    availability: true,
 };

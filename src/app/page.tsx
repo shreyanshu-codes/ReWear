@@ -1,5 +1,4 @@
-
-import { getDocs, collection, query, orderBy, limit } from 'firebase/firestore';
+import { getDocs, collection, query, orderBy, limit, getDoc, DocumentReference } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Garment } from '@/types';
 
@@ -16,68 +15,45 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 
-async function getFeaturedItems() {
-  const items: (Garment & { priority: number })[] = [];
+async function getFeaturedItems(): Promise<Garment[]> {
   try {
     const featuredItemsRef = collection(db, 'featuredItems');
     const q = query(featuredItemsRef, orderBy('priority', 'asc'), limit(5));
     const querySnapshot = await getDocs(q);
 
-    // This part is a bit more complex because we need to fetch the actual item data
-    // based on the IDs in the featuredItems collection. For this example, we'll
-    // assume the featured items collection contains the full garment data.
-    // In a real app, you might fetch item details from the 'items' collection.
+    if (querySnapshot.empty) {
+        throw new Error("No featured items found.");
+    }
     
-    const itemDocs = await Promise.all(
-        querySnapshot.docs.map(doc => getDoc(doc.data().itemRef))
-    );
-
-    querySnapshot.forEach((doc) => {
-      // For simplicity, we assume featuredItems contains denormalized data
-      // or we would fetch it from the 'items' collection using the reference.
-      // This implementation will depend on the final Firestore structure.
-      // Let's assume for now `featuredItems` has the data we need.
-      const data = doc.data();
-      items.push({
-        id: doc.id,
-        name: data.name || 'Featured Item',
-        description: data.description || '',
-        category: data.category || '',
-        suitableOccasions: data.suitableOccasions || '',
-        dominantColor: data.dominantColor || '',
-        imageUrl: data.imageUrl || 'https://placehold.co/400x600.png',
-        style: data.style || '',
-        priority: data.priority,
-      });
+    const itemPromises = querySnapshot.docs.map(doc => {
+        const itemRef = doc.data().itemRef as DocumentReference;
+        return getDoc(itemRef);
     });
 
-    // If no featured items are found, use some initial data as fallback for display
-    if (items.length === 0) {
-      return [
-        { id: '1', name: 'Classic White Tee', imageUrl: 'https://placehold.co/400x600.png', category: 'Tops', style: 'Classic' },
-        { id: '2', name: 'Vintage Blue Jeans', imageUrl: 'https://placehold.co/400x600.png', category: 'Bottoms', style: 'Vintage' },
-        { id: '3', name: 'Floral Sundress', imageUrl: 'https://placehold.co/400x600.png', category: 'Dresses', style: 'Bohemian' },
-        { id: '4', name: 'Black Blazer', imageUrl: 'https://placehold.co/400x600.png', category: 'Outerwear', style: 'Modern' },
-        { id: '5', name: 'Leather Ankle Boots', imageUrl: 'https://placehold.co/400x600.png', category: 'Shoes', style: 'Classic' },
-      ].map(item => ({...item, description: '', suitableOccasions: '', dominantColor: ''}));
-    }
+    const itemDocs = await Promise.all(itemPromises);
 
+    const items = itemDocs.map((doc) => {
+        const data = doc.data();
+        if (!data) return null;
+        return {
+            id: doc.id,
+            ...data,
+        } as Garment;
+    }).filter((item): item is Garment => item !== null);
+
+    return items;
 
   } catch (error) {
     console.error("Error fetching featured items: ", error);
     // Return dummy data on error to ensure page renders
-     return [
-        { id: '1', name: 'Classic White Tee', imageUrl: 'https://placehold.co/400x600.png', category: 'Tops', style: 'Classic' },
-        { id: '2', name: 'Vintage Blue Jeans', imageUrl: 'https://placehold.co/400x600.png', category: 'Bottoms', style: 'Vintage' },
-        { id: '3', name: 'Floral Sundress', imageUrl: 'https://placehold.co/400x600.png', category: 'Dresses', style: 'Bohemian' },
-        { id: '4', name: 'Black Blazer', imageUrl: 'https://placehold.co/400x600.png', category: 'Outerwear', style: 'Modern' },
-        { id: '5', name: 'Leather Ankle Boots', imageUrl: 'https://placehold.co/400x600.png', category: 'Shoes', style: 'Classic' },
-      ].map(item => ({...item, description: '', suitableOccasions: '', dominantColor: ''}));
+    return [
+        { id: '1', name: 'Classic White Tee', imageUrls: ['https://placehold.co/400x600.png'], category: 'Tops', style: 'Classic' },
+        { id: '2', name: 'Vintage Blue Jeans', imageUrls: ['https://placehold.co/400x600.png'], category: 'Bottoms', style: 'Vintage' },
+        { id: '3', name: 'Floral Sundress', imageUrls: ['https://placehold.co/400x600.png'], category: 'Dresses', style: 'Bohemian' },
+        { id: '4', name: 'Black Blazer', imageUrls: ['https://placehold.co/400x600.png'], category: 'Outerwear', style: 'Modern' },
+        { id: '5', name: 'Leather Ankle Boots', imageUrls: ['https://placehold.co/400x600.png'], category: 'Shoes', style: 'Classic' },
+    ].map(item => ({...item, description: '', suitableOccasions: '', dominantColor: '', availability: true}));
   }
-
-  // This part is tricky without a backend call to join data.
-  // We will assume `featuredItems` contains all necessary data for now.
-  return items.slice(0, 5);
 }
 
 
@@ -132,7 +108,7 @@ export default async function LandingPage() {
                       <Card className="overflow-hidden">
                         <CardContent className="p-0">
                           <Image
-                            src={item.imageUrl}
+                            src={item.imageUrls?.[0] || 'https://placehold.co/400x600.png'}
                             alt={item.name}
                             width={400}
                             height={500}
